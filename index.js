@@ -10,14 +10,12 @@ const objectId = require('mongodb').ObjectId;
 
 function getConnection() {
 
-    const {DB_USER:user,DB_NAME:db,DB_CONNECTION:connection,DB_PASSWORD:password,local} = process.env
+    const { DB_USER: user, DB_NAME: db, DB_CONNECTION: connection, DB_PASSWORD: password, local } = process.env
     if (local) return `mongodb://localhost:27017`
-  
     const conn = `mongodb+srv://${user}:${password}@${connection}/${db}?retryWrites=true&w=majority`
-  
     console.log(conn);
     return conn;
-  }
+}
 
 const mongoOptions = {
     useUnifiedTopology: true,
@@ -34,6 +32,7 @@ function resetGame() {
 
 app.use(cors());
 app.options("*", cors());
+app.use(express.static('build'));
 
 app.post('/api/game/new', (req, res) => {
     try {
@@ -50,6 +49,7 @@ app.post('/api/game/new', (req, res) => {
         res.status(500).end();
     }
 });
+
 
 app.get('/api/game/add-player/:player_name', (req, res) => {
     try {
@@ -125,6 +125,10 @@ app.get('/api/game/words/:player_name', (req, res) => {
         res.statusMessage = e;
         res.status(500).end();
     }
+});
+
+app.get('/', (req, res) => {
+    res.sendFile('index.html');
 });
 
 app.listen(port, () => console.log(`created server on port ${port}`));
